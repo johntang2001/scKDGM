@@ -1,8 +1,6 @@
 # scKDGM
 
-Official implementation of **scKDGM: KAN-guided Dynamic Graph Masked Learning for Single-Cell RNA-seq Clustering**.
-
-This repository contains only the core implementation used for model training and evaluation. Extra visualization scripts, sweep scripts, ablation switches, and experimental logs are intentionally omitted for anonymous review.
+Implementation of **scKDGM: KAN-guided Dynamic Graph Masked Learning for Single-Cell RNA-seq Clustering**.
 
 ## Contents
 
