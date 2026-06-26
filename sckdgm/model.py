@@ -60,14 +60,12 @@ class TAGEncoder(nn.Module):
 class ScKDGM(nn.Module):
     """KAN-guided dynamic graph masked learning for scRNA-seq clustering."""
 
-    def __init__(self, x, zinb_target, adj, size_factor=None, hidden_dim=256, latent_dim=128, decoder_hidden=512, encoder_dropout=0.2):
+    def __init__(self, x, adj, size_factor=None, hidden_dim=256, latent_dim=128, decoder_hidden=512, encoder_dropout=0.2):
         super().__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         if scipy.sparse.issparse(x):
             x = x.toarray()
         self.x = torch.tensor(x, dtype=torch.float32, device=self.device)
-        # Keep the same ZINB target used by the current SCMaskGraphZINB implementation.
-        self.zinb_target = self.x
         self.adj = self._sanitize_adj(torch.tensor(adj, dtype=torch.float32, device=self.device))
         self.n_cells, self.n_genes = self.x.shape
         self.edge_index = None
@@ -174,7 +172,7 @@ class ScKDGM(nn.Module):
         recon_loss = self._feature_recon_loss(x_hat, mask)
         mask_loss = binary_cross_entropy_with_logits(pred_mask, mask, reduction="mean")
         pi, disp, mean = self._decode_zinb(z)
-        zinb_loss = self.zinb_loss(pi=pi, theta=disp, y_true=self.zinb_target, y_pred=mean)
+        zinb_loss = self.zinb_loss(pi=pi, theta=disp, y_true=self.x, y_pred=mean)
         next_adj, _, next_edge_index, next_edge_weight = self._build_dynamic_graph(x_hat, k=k, temperature=temperature)
         z_dynamic = self.encode(self.x, next_edge_index, next_edge_weight)
         contrast_loss = info_nce_loss(z.detach(), z_dynamic, temperature=contrast_temperature)
@@ -183,7 +181,7 @@ class ScKDGM(nn.Module):
     def _clean_step(self, k, temperature, contrast_temperature):
         z = self.encode(self.x, self.edge_index, self.edge_weight)
         pi, disp, mean = self._decode_zinb(z)
-        zinb_loss = self.zinb_loss(pi=pi, theta=disp, y_true=self.zinb_target, y_pred=mean)
+        zinb_loss = self.zinb_loss(pi=pi, theta=disp, y_true=self.x, y_pred=mean)
         next_adj, _, next_edge_index, next_edge_weight = self._build_dynamic_graph(z, k=k, temperature=temperature)
         z_dynamic = self.encode(self.x, next_edge_index, next_edge_weight)
         contrast_loss = info_nce_loss(z, z_dynamic, temperature=contrast_temperature)

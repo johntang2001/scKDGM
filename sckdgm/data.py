@@ -50,8 +50,7 @@ def preprocess_counts(counts, n_hvg=1000):
     )
     hvg_index = np.asarray(adata.var.highly_variable.index, dtype=np.int64)
     count_hvg = counts[:, hvg_index].astype(np.float32)
-    zinb_target = np.asarray(adata.X, dtype=np.float32)
     size_factor = np.asarray(adata.obs["size_factors"]).reshape(-1, 1).astype(np.float32)
     sc.pp.scale(adata)
     x = np.asarray(adata.X, dtype=np.float32)
-    return x, zinb_target, count_hvg, size_factor
+    return x, count_hvg, size_factor

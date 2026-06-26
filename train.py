@@ -40,13 +40,13 @@ def main():
 
     set_seed(args.seed)
     counts, y = read_h5_dataset(args.data)
-    x, _, _, size_factor = preprocess_counts(counts, n_hvg=args.hvg)
+    x, _, size_factor = preprocess_counts(counts, n_hvg=args.hvg)
     n_clusters = len(np.unique(y))
     adj, _ = build_knn_graph(x, k=args.k, pca_dim=50)
 
     print(f"Dataset: {os.path.basename(os.path.dirname(args.data))}")
     print(f"Cells: {x.shape[0]}, HVGs: {x.shape[1]}, clusters: {n_clusters}")
-    model = ScKDGM(x=x, zinb_target=x, adj=adj, size_factor=size_factor)
+    model = ScKDGM(x=x, adj=adj, size_factor=size_factor)
     print(model)
 
     print("\n========== Pre-training ==========")
