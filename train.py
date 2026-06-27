@@ -79,9 +79,6 @@ def main():
         gumbel_temperature=args.gumbel_temperature,
         log_interval=1,
     )
-    scores = clustering_scores(y, model.y_pred)
-    print(f"\nFinal | ACC: {scores['acc']:.4f}, NMI: {scores['nmi']:.4f}, ARI: {scores['ari']:.4f}")
-
 
 if __name__ == "__main__":
     main()
