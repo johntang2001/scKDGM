@@ -34,9 +34,3 @@ Run the included test dataset:
 ```bash
 python train.py
 ```
-
-Useful runtime options:
-
-```bash
-python train.py
-```
